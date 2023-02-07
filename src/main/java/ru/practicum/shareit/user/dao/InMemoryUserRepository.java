@@ -9,7 +9,7 @@ import java.util.*;
 
 @Repository
 public class InMemoryUserRepository implements UserRepository {
-    private final static Map<Long, User> USERS = new HashMap<>();
+    private static final Map<Long, User> USERS = new HashMap<>();
     private long count;
 
     @Override
