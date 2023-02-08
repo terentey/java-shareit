@@ -6,10 +6,8 @@ import ru.practicum.shareit.exception.IncorrectIdException;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,13 +16,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
-    public UserDto save(User user) {
-        return UserMapper.mapToUserDto(repository.save(user));
+    public UserDto save(UserDto userDto) {
+        return UserMapper.mapToUserDto(repository.save(UserMapper.mapToUser(userDto)));
     }
 
     @Override
-    public UserDto update(Map<String, String> patch, long id) {
-        return UserMapper.mapToUserDto(repository.update(patch, id));
+    public UserDto update(UserDto userDto, long id) {
+        return UserMapper.mapToUserDto(repository.update(UserMapper.mapToUser(userDto), id));
     }
 
     @Override

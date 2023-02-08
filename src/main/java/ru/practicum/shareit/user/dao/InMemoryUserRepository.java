@@ -9,46 +9,47 @@ import java.util.*;
 
 @Repository
 public class InMemoryUserRepository implements UserRepository {
-    private static final Map<Long, User> USERS = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private long count;
 
     @Override
     public User save(User user) {
-        isEmailExist(user.getEmail());
+        isEmailExist(user);
         user.setId(++count);
-        USERS.put(count, user);
+        users.put(count, user);
         return user;
     }
 
     @Override
-    public User update(Map<String, String> patch, long id) {
-        User user = Optional.ofNullable(USERS.get(id)).orElseThrow(IncorrectIdException::new);
-        if (patch.containsKey("name")) user.setName(patch.get("name"));
-        if (patch.containsKey("email")) {
-            String email = patch.get("email");
-            isEmailExist(email);
-            user.setEmail(email);
+    public User update(User user, long id) {
+        User updatedUser = Optional.ofNullable(users.get(id)).orElseThrow(IncorrectIdException::new);
+        if (user.getName() != null && !user.getName().isBlank()) updatedUser.setName(user.getName());
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            isEmailExist(user);
+            updatedUser.setEmail(user.getEmail());
         }
-        USERS.put(id, user);
-        return user;
+        return updatedUser;
     }
 
     @Override
     public List<User> findAll() {
-        return new ArrayList<>(USERS.values());
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public Optional<User> findById(long id) {
-        return Optional.ofNullable(USERS.get(id));
+        return Optional.ofNullable(users.get(id));
     }
 
     @Override
     public void delete(long id) {
-        USERS.remove(id);
+        users.remove(id);
     }
 
-    private void isEmailExist(String email) {
-        if (USERS.values().stream().anyMatch(u -> u.getEmail().equals(email))) throw new EmailDuplicationException();
+    private void isEmailExist(User user) {
+        Long id = user.getId();
+        String email = user.getEmail();
+        if (users.values().stream().anyMatch(u -> u.getEmail().equals(email) && !u.getId().equals(id)))
+            throw new EmailDuplicationException();
     }
 }

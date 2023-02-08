@@ -1,15 +1,14 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.util.Marker;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/items")
@@ -19,17 +18,18 @@ public class ItemController {
     private final UserService userService;
 
     @PostMapping()
-    public ItemDto save(@RequestBody @Valid Item item, @RequestHeader(name = "X-Sharer-User-Id") long userId) {
+    public ItemDto save(@RequestBody @Validated(Marker.OnCreate.class) ItemDto itemDto,
+                        @RequestHeader(name = "X-Sharer-User-Id") long userId) {
         userService.findById(userId);
-        return service.save(item, userId);
+        return service.save(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestBody Map<String, String> patch,
+    public ItemDto update(@RequestBody ItemDto itemDto,
                           @PathVariable(name = "itemId") long id,
                           @RequestHeader(name = "X-Sharer-User-Id") long userId) {
         userService.findById(userId);
-        return service.update(patch, id, userId);
+        return service.update(itemDto, id, userId);
     }
 
     @GetMapping("/{itemId}")
@@ -44,7 +44,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestHeader(name = "X-Sharer-User-Id") long userId, @RequestParam(required = false) String text) {
+    public List<ItemDto> search(@RequestHeader(name = "X-Sharer-User-Id") long userId, @RequestParam String text) {
         return service.search(userId, text);
     }
 }
