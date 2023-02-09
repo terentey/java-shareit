@@ -23,7 +23,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User update(User user, long id) {
         User updatedUser = Optional.ofNullable(users.get(id)).orElseThrow(IncorrectIdException::new);
-        if (user.getName() != null && !user.getName().isBlank()) updatedUser.setName(user.getName());
+        if (user.getName() != null && !user.getName().isBlank()) {
+            updatedUser.setName(user.getName());
+        }
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
             isEmailExist(user);
             updatedUser.setEmail(user.getEmail());
@@ -49,7 +51,8 @@ public class InMemoryUserRepository implements UserRepository {
     private void isEmailExist(User user) {
         Long id = user.getId();
         String email = user.getEmail();
-        if (users.values().stream().anyMatch(u -> u.getEmail().equals(email) && !u.getId().equals(id)))
+        if (users.values().stream().anyMatch(u -> u.getEmail().equals(email) && !u.getId().equals(id))) {
             throw new EmailDuplicationException();
+        }
     }
 }

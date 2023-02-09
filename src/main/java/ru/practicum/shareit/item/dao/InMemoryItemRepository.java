@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryItemRepository implements ItemRepository {
+    private final Map<Long, Item> itemsById = new HashMap<>();
     private final Map<Long, List<Item>> userItemIndex = new HashMap<>();
     private long count;
 
@@ -17,29 +18,36 @@ public class InMemoryItemRepository implements ItemRepository {
         item.setId(++count);
         final List<Item> items = userItemIndex.computeIfAbsent(userId, k -> new ArrayList<>());
         items.add(item);
+        itemsById.put(count, item);
         return item;
     }
 
     @Override
     public Item update(Item item, long id, long userId) {
         Item updatedItem = findById(id, userId).orElseThrow(IncorrectIdException::new);
-        if (item.getName() != null && !item.getName().isBlank()) updatedItem.setName(item.getName());
-        if (item.getDescription() != null && !item.getDescription().isBlank())
+        if (item.getName() != null && !item.getName().isBlank()) {
+            updatedItem.setName(item.getName());
+        }
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
             updatedItem.setDescription(item.getDescription());
-        if (item.getAvailable() != null) updatedItem.setAvailable(item.getAvailable());
+        }
+        if (item.getAvailable() != null) {
+            updatedItem.setAvailable(item.getAvailable());
+        }
         return updatedItem;
     }
 
     @Override
     public Optional<Item> findById(long id, long userId) {
-        if (!userItemIndex.containsKey(userId)) throw new IncorrectIdException();
+        if (!userItemIndex.containsKey(userId)) {
+            throw new IncorrectIdException();
+        }
         return userItemIndex.get(userId).stream().filter(i -> i.getId() == id).findFirst();
     }
 
     @Override
     public Optional<Item> findById(long id) {
-        return userItemIndex.values().stream()
-                .map(list -> list.stream().filter(i -> i.getId() == id).findFirst()).findFirst().get();
+        return Optional.ofNullable(itemsById.get(id));
     }
 
     @Override
