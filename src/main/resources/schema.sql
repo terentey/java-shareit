@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS bookings
     end_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     status   VARCHAR                     NOT NULL,
     item_id  INTEGER REFERENCES items (id),
-    user_id  INTEGER REFERENCES users (id),
+    user_id INTEGER REFERENCES users (id)
 );
