@@ -7,18 +7,39 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Map;
+
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleIncorrectBookerId(IncorrectBookerId e) {
+        log.error("Incorrect booker id");
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> handleIncorrectState(IncorrectState e) {
+        log.error("Unknown state: UNSUPPORTED_STATUS");
+        return new ResponseEntity<>(Map.of("error", "Unknown state: UNSUPPORTED_STATUS"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleUnavailableItem(UnavailableItemException e) {
+        log.error("item is unavailable {}", e.getMessage());
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler
     public ResponseEntity<String> handleIncorrectId(IncorrectIdException e) {
-        log.error("Неверный id{}", e.getMessage());
+        log.error("Неверный id {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<String> handleEmailDuplication(EmailDuplicationException e) {
-        log.error("Пользователь с данным email уже существует{}", e.getMessage());
+        log.error("Пользователь с данным email уже существует {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
 
