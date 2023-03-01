@@ -43,8 +43,8 @@ public class ItemMapper {
         return items
                 .stream()
                 .map(ItemMapper::mapToItemDtoByOwner)
-                .sorted(Comparator.comparing(ItemDto::getId)).
-                collect(Collectors.toList());
+                .sorted(Comparator.comparing(ItemDto::getId))
+                .collect(Collectors.toList());
     }
 
     public static ItemDto mapToItemDtoByOwner(Item item) {
