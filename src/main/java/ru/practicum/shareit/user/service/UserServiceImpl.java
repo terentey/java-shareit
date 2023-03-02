@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             user.setEmail(userDto.getEmail());
         }
-        return UserMapper.mapToUserDto(repository.saveAndFlush(user));
+        return UserMapper.mapToUserDto(user);
     }
 
     @Transactional

@@ -1,10 +1,12 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dao.BookingRepository;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
@@ -17,29 +19,26 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
+    private final static Sort SORT_BY_START_DESC = Sort.by(Sort.Direction.DESC, "start");
+
     private final BookingRepository repository;
     private final ItemRepository itemRepo;
     private final UserRepository userRepo;
 
+    @Transactional
     @Override
-    public BookingDto save(BookingDto bookingDto, long userId) {
+    public BookingDtoResponse save(BookingDtoRequest bookingDto, long userId) {
         Item item = itemRepo.findById(bookingDto.getItemId()).orElseThrow(IncorrectIdException::new);
         User booker = userRepo.findById(userId).orElseThrow(IncorrectIdException::new);
-        LocalDateTime start = LocalDateTime.parse(bookingDto.getStart());
-        LocalDateTime end = LocalDateTime.parse(bookingDto.getEnd());
-        LocalDateTime now = LocalDateTime.now();
-        boolean isEndAfterStart = end.isAfter(start);
-        boolean isEndAndStartInFeature = end.isAfter(now) && start.isAfter(now);
         if (booker.getId() != userId || item.getUser().getId() == userId) {
             throw new IncorrectIdException();
-        } else if (item.getAvailable() && isEndAfterStart && isEndAndStartInFeature) {
+        } else if (item.getAvailable()) {
             return BookingMapper
                     .mapToBookingDto(repository
                             .saveAndFlush(BookingMapper.mapToBooking(bookingDto, Status.WAITING, item, booker)));
@@ -48,8 +47,9 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Transactional
     @Override
-    public BookingDto update(long id, long ownerId, boolean approved) {
+    public BookingDtoResponse update(long id, long ownerId, boolean approved) {
         Booking booking = repository.findById(id).orElseThrow(IncorrectIdException::new);
         if (booking.getItem().getUser().getId() != ownerId) {
             throw new IncorrectIdException();
@@ -60,37 +60,39 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(Status.REJECTED);
         }
-        return BookingMapper.mapToBookingDto(repository.saveAndFlush(booking));
+        return BookingMapper.mapToBookingDto(booking);
     }
 
+    @Transactional
     @Override
-    public BookingDto findById(long id, long userId) {
+    public BookingDtoResponse findById(long id, long userId) {
         return BookingMapper.mapToBookingDto(repository.findByIdAndUserIdOrOwnerId(id, userId).orElseThrow(IncorrectIdException::new));
     }
 
+    @Transactional
     @Override
-    public List<BookingDto> findAllByUserId(long userId, String status) {
-        final State state = State.fromString(status);
+    public List<BookingDtoResponse> findAllByUserId(long userId, String status) {
+        final State state = getState(status);
         userRepo.findById(userId).orElseThrow(IncorrectIdException::new);
         final List<Booking> bookings;
         switch (state) {
             case ALL:
-                bookings = repository.findAllByUserId(userId);
+                bookings = repository.findAllByUserId(userId, SORT_BY_START_DESC);
                 break;
             case CURRENT:
-                bookings = repository.findAllByUserIdAndStatusAndCurrentTime(userId);
+                bookings = repository.findAllByUserIdAndStatusAndCurrentTime(userId, SORT_BY_START_DESC);
                 break;
             case PAST:
-                bookings = repository.findAllByUserIdAndStatusAndEndAfter(userId);
+                bookings = repository.findAllByUserIdAndStatusAndEndBefore(userId, SORT_BY_START_DESC);
                 break;
             case FUTURE:
-                bookings = repository.findAllByUserIdAndStatusAndStartAfter(userId);
+                bookings = repository.findAllByUserIdAndStatusAndStartAfter(userId, SORT_BY_START_DESC);
                 break;
             case WAITING:
-                bookings = repository.findAllByUserIdAndStatus(userId, Status.WAITING);
+                bookings = repository.findAllByUserIdAndStatus(userId, Status.WAITING, SORT_BY_START_DESC);
                 break;
             case REJECTED:
-                bookings = repository.findAllByUserIdAndStatus(userId, Status.REJECTED);
+                bookings = repository.findAllByUserIdAndStatus(userId, Status.REJECTED, SORT_BY_START_DESC);
                 break;
             default:
                 throw new IncorrectState();
@@ -98,33 +100,42 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingDto(bookings);
     }
 
+    @Transactional
     @Override
-    public List<BookingDto> findAllByOwnerId(long ownerId, String status) {
-        final State state = State.fromString(status);
+    public List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status) {
+        final State state = getState(status);
         userRepo.findById(ownerId).orElseThrow(IncorrectIdException::new);
         List<Booking> bookings;
         switch (state) {
             case ALL:
-                bookings = repository.findAllByOwnerId(ownerId);
+                bookings = repository.findAllByOwnerId(ownerId, SORT_BY_START_DESC);
                 break;
             case CURRENT:
-                bookings = repository.findAllByOwnerIdAndStatusAndCurrentTime(ownerId);
+                bookings = repository.findAllByOwnerIdAndStatusAndCurrentTime(ownerId, SORT_BY_START_DESC);
                 break;
             case PAST:
-                bookings = repository.findAllByOwnerIdAndStatusAndEndAfter(ownerId);
+                bookings = repository.findAllByOwnerIdAndStatusAndEndBefore(ownerId, SORT_BY_START_DESC);
                 break;
             case FUTURE:
-                bookings = repository.findAllByOwnerIdAndStatusAndStartAfter(ownerId);
+                bookings = repository.findAllByOwnerIdAndStatusAndStartAfter(ownerId, SORT_BY_START_DESC);
                 break;
             case WAITING:
-                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING);
+                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING, SORT_BY_START_DESC);
                 break;
             case REJECTED:
-                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED);
+                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED, SORT_BY_START_DESC);
                 break;
             default:
                 throw new IncorrectState();
         }
         return BookingMapper.mapToBookingDto(bookings);
+    }
+
+    private State getState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (Throwable e) {
+            throw new IncorrectState();
+        }
     }
 }
