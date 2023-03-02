@@ -34,9 +34,9 @@ import static java.util.stream.Collectors.toList;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final static Sort SORT_BY_START_DESC = Sort.by(Sort.Direction.DESC, "start");
-    private final static Sort SORT_BY_START_ASC = Sort.by(Sort.Direction.ASC, "start");
-    private final static Sort SORT_BY_CREATED_DESC = Sort.by(Sort.Direction.DESC, "created");
+    private static final Sort SORT_BY_START_DESC = Sort.by(Sort.Direction.DESC, "start");
+    private static final Sort SORT_BY_START_ASC = Sort.by(Sort.Direction.ASC, "start");
+    private static final Sort SORT_BY_CREATED_DESC = Sort.by(Sort.Direction.DESC, "created");
 
     private final UserRepository userRepo;
     private final CommentRepository commentRepo;
