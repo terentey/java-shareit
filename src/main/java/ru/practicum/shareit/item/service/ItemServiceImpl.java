@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -46,7 +47,9 @@ public class ItemServiceImpl implements ItemService {
                         && b.getStart().isBefore(LocalDateTime.now()))) {
             throw new IncorrectBookerId();
         }
-        return CommentMapper.mapToCommentDto(commentRepo.saveAndFlush(CommentMapper.mapToComment(commentDto, item)));
+        User user = item.getBookings().stream()
+                .filter(b -> b.getItem().equals(item) && b.getUser().getId() == userId).findFirst().get().getUser();
+        return CommentMapper.mapToCommentDto(commentRepo.saveAndFlush(CommentMapper.mapToComment(commentDto, item, user)));
     }
 
     @Transactional

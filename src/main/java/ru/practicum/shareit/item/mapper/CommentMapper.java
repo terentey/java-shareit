@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.Instant;
 import java.util.Set;
@@ -22,13 +23,13 @@ public class CommentMapper {
                 .build();
     }
 
-    public static Comment mapToComment(CommentDto commentDto, Item item) {
+    public static Comment mapToComment(CommentDto commentDto, Item item, User user) {
         Comment comment = new Comment();
         comment.setId(commentDto.getId());
         comment.setText(commentDto.getText());
         comment.setCreated(Instant.now());
         comment.setItem(item);
-        comment.setUser(item.getBookings().stream().filter(b -> b.getItem().equals(item)).findFirst().get().getUser());
+        comment.setUser(user);
         return comment;
     }
 
