@@ -6,9 +6,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -20,20 +18,11 @@ public class BookingMapper {
         return BookingDtoResponse
                 .builder()
                 .id(booking.getId())
-                .bookerId(booking.getUser().getId())
-                .start(booking.getStart().toString())
-                .end(booking.getEnd().toString())
+                .start(booking.getStart())
+                .end(booking.getEnd())
                 .status(booking.getStatus())
-                .booker(UserMapper.mapToUserDto(booking.getUser()))
-                .item(ItemMapper.mapToItemDto(booking.getItem()))
-                .build();
-    }
-
-    public static BookingDtoResponse mapToBookingDtoForItemDto(Booking booking) {
-        return BookingDtoResponse
-                .builder()
-                .id(booking.getId())
-                .bookerId(booking.getUser().getId())
+                .booker(new BookingDtoResponse.Booker(booking.getUser().getId(), booking.getUser().getName()))
+                .item(new BookingDtoResponse.Item(booking.getItem().getId(), booking.getItem().getName()))
                 .build();
     }
 

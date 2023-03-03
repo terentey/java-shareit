@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDtoResponse;
@@ -41,13 +40,13 @@ public class ItemMapper {
 
     public static ItemDtoResponse mapToItemDto(Item item, List<Comment> comments, List<Booking> bookings) {
         ItemDtoResponse itemDto = mapToItemDto(item, comments);
-        if (bookings != null && !bookings.isEmpty() && bookings.size() != 1) {
-            itemDto.setLastBooking(BookingMapper.mapToBookingDtoForItemDto(bookings.stream()
-                    .filter(b -> b.getStart().isBefore(LocalDateTime.now()))
-                    .max(Comparator.comparing(Booking::getStart)).get()));
-            itemDto.setNextBooking(BookingMapper.mapToBookingDtoForItemDto(bookings.stream()
+        if (bookings != null && !bookings.isEmpty()) {
+            itemDto.setLastBooking(mapToBookingDto(bookings.stream()
+                    .filter(b -> !b.getStart().isAfter(LocalDateTime.now()))
+                    .findFirst().orElse(null)));
+            itemDto.setNextBooking(mapToBookingDto(bookings.stream()
                     .filter(b -> b.getStart().isAfter(LocalDateTime.now()))
-                    .min(Comparator.comparing(Booking::getStart)).get()));
+                    .reduce((f, s) -> s).orElse(null)));
         }
         return itemDto;
     }
@@ -70,5 +69,14 @@ public class ItemMapper {
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         return item;
+    }
+
+    private static ItemDtoResponse.BookingDto mapToBookingDto(Booking booking) {
+        if (booking == null) {
+            return null;
+        } else {
+            return new ItemDtoResponse
+                    .BookingDto(booking.getId(), booking.getStart(), booking.getEnd(), booking.getUser().getId());
+        }
     }
 }

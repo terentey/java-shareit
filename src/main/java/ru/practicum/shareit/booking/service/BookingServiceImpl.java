@@ -63,13 +63,13 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingDto(booking);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public BookingDtoResponse findById(long id, long userId) {
         return BookingMapper.mapToBookingDto(repository.findByIdAndUserIdOrOwnerId(id, userId).orElseThrow(IncorrectIdException::new));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDtoResponse> findAllByUserId(long userId, String status) {
         final State state = getState(status);
@@ -100,7 +100,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.mapToBookingDto(bookings);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status) {
         final State state = getState(status);

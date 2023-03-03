@@ -22,7 +22,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +56,9 @@ public class ItemServiceImpl implements ItemService {
     public CommentDtoResponse saveComment(CommentDtoRequest commentDto, long itemId, long userId) {
         Item item = repository.findById(itemId).orElseThrow(IncorrectIdException::new);
         if (userId == item.getUser().getId()) throw new IncorrectIdException();
-        Booking booking = bookingRepo.findByItemIdAndUserId(itemId, userId, SORT_BY_START_ASC)
+        Booking booking = bookingRepo
+                .findByItemIdAndUserIdAndStatusApprovedAndStartBeforeNow(itemId, userId, SORT_BY_START_ASC)
                 .stream().findFirst().orElseThrow(IncorrectBookerId::new);
-        if (booking.getStatus() == Status.REJECTED || booking.getStart().isAfter(LocalDateTime.now())) {
-            throw new IncorrectBookerId();
-        }
         User user = booking.getUser();
         return CommentMapper.mapToCommentDto(commentRepo.saveAndFlush(CommentMapper.mapToComment(commentDto, item, user)));
     }
@@ -83,15 +80,12 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.mapToItemDto(item);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public ItemDtoResponse findById(long id, long userId) {
         Item item = repository.findById(id).orElseThrow(IncorrectIdException::new);
         List<Comment> comments = commentRepo.findByItemIn(List.of(item), SORT_BY_CREATED_DESC);
-        List<Booking> bookings = bookingRepo.findAllByOwnerId(userId, SORT_BY_START_DESC)
-                .stream()
-                .filter(b -> !b.getStatus().equals(Status.REJECTED))
-                .collect(toList());
+        List<Booking> bookings = bookingRepo.findAllByOwnerIdAndStatusNotIn(userId, Status.REJECTED, SORT_BY_START_DESC);
         ItemDtoResponse itemDto;
         if (item.getUser().getId() == userId) {
             itemDto = ItemMapper.mapToItemDto(item, comments, bookings);
@@ -101,13 +95,13 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDtoResponse> findAll(long userId) {
         return setCommentsAndBookings(repository.findItemsByUserId(userId));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDtoResponse> search(long userId, String text) {
         if (text.isBlank()) {
@@ -121,9 +115,9 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Comment>> comments = commentRepo.findByItemIn(items, SORT_BY_CREATED_DESC)
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
-        Map<Item, List<Booking>> bookings = bookingRepo.findByItemIn(items, SORT_BY_START_DESC)
+        Map<Item, List<Booking>> bookings = bookingRepo
+                .findByItemInAndStatusNotIn(items, Status.REJECTED, SORT_BY_START_DESC)
                 .stream()
-                .filter(b -> !b.getStatus().equals(Status.REJECTED))
                 .collect(groupingBy(Booking::getItem, toList()));
         return ItemMapper.mapToItemDto(items, comments, bookings);
     }

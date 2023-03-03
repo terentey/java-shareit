@@ -14,15 +14,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id=?1 and b.user.id=?2 and b.status='APPROVED'")
-    List<Booking> findByItemIdAndUserId(long itemId, long userId, Sort sort);
+            "where b.item.id=?1 and b.user.id=?2 and b.status='APPROVED' and b.start < now()")
+    List<Booking> findByItemIdAndUserIdAndStatusApprovedAndStartBeforeNow(long itemId, long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "where b.id=?1 and (b.user.id=?2 or b.item.user.id=?2)")
     Optional<Booking> findByIdAndUserIdOrOwnerId(long id, long userId);
 
-    List<Booking> findByItemIn(List<Item> items, Sort sort);
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item in (?1) and b.status not in (?2)")
+    List<Booking> findByItemInAndStatusNotIn(List<Item> items, Status status, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
@@ -56,8 +59,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.user.id=?1")
-    List<Booking> findAllByOwnerIdAndStatus(long ownerId, Sort sort);
+            "where b.item.user.id=?1 and b.status not in ?2")
+    List<Booking> findAllByOwnerIdAndStatusNotIn(long ownerId, Status status, Sort sort);
 
     @Query("select b " +
             "from Booking b " +

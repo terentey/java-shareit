@@ -36,13 +36,13 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> findAll() {
         return UserMapper.mapToUserDto(repository.findAll());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserDto findById(long id) {
         return UserMapper.mapToUserDto(repository.findById(id).orElseThrow(IncorrectIdException::new));

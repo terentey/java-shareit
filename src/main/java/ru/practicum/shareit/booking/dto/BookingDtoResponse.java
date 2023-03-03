@@ -5,24 +5,31 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.dto.ItemDtoResponse;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.util.Marker;
 
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class BookingDtoResponse {
     Long id;
-    Long itemId;
-    Long bookerId;
-    @NotNull(groups = {Marker.OnCreate.class})
-    String start;
-    @NotNull(groups = {Marker.OnCreate.class})
-    String end;
+    LocalDateTime start;
+    LocalDateTime end;
     Status status;
-    UserDto booker;
-    ItemDtoResponse item;
+    Booker booker;
+    Item item;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Booker {
+        Long id;
+        String name;
+    }
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Item {
+        Long id;
+        String name;
+    }
 }

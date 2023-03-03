@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.dto.BookingDtoResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -17,6 +17,15 @@ public class ItemDtoResponse {
     String description;
     Boolean available;
     List<CommentDtoResponse> comments;
-    BookingDtoResponse lastBooking;
-    BookingDtoResponse nextBooking;
+    BookingDto lastBooking;
+    BookingDto nextBooking;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class BookingDto {
+        Long id;
+        LocalDateTime start;
+        LocalDateTime end;
+        Long bookerId;
+    }
 }
