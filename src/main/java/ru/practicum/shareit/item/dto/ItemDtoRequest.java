@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class ItemDto {
+public class ItemDtoRequest {
     Long id;
     @NotBlank(groups = {Marker.OnCreate.class})
     String name;
