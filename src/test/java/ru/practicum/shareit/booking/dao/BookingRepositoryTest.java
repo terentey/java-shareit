@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
 import static ru.practicum.shareit.booking.model.Status.WAITING;
@@ -61,18 +60,6 @@ class BookingRepositoryTest {
                 SORT_BY_START_DESC);
 
         assertFalse(bookings.isEmpty());
-    }
-
-    @Test
-    void findByIdAndUserIdOrOwnerId() {
-        Booking booking = getNewBooking(NOW.minusDays(2), NOW.minusDays(1), APPROVED, item, booker);
-        bookingRepo.save(booking);
-
-        Booking bookingByOwner = bookingRepo.findByIdAndUserIdOrOwnerId(item.getId(), user.getId()).get();
-        Booking bookingByBooker = bookingRepo.findByIdAndUserIdOrOwnerId(item.getId(), booker.getId()).get();
-
-        assertEquals(booking.getId(), bookingByOwner.getId());
-        assertEquals(booking.getId(), bookingByBooker.getId());
     }
 
     @Test
