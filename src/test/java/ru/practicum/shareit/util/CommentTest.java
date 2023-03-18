@@ -8,8 +8,13 @@ import java.time.Instant;
 
 public class CommentTest {
     public static Comment getNewComment(Long id, String text, Instant created, Item item, User user) {
-        Comment comment = new Comment();
+        Comment comment = getNewComment(text, created, item, user);
         comment.setId(id);
+        return comment;
+    }
+
+    public static Comment getNewComment(String text, Instant created, Item item, User user) {
+        Comment comment = new Comment();
         comment.setText(text);
         comment.setCreated(created);
         comment.setItem(item);

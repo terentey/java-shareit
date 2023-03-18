@@ -38,12 +38,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> handleEmailDuplication(EmailDuplicationException e) {
-        log.error("Пользователь с данным email уже существует {}", e.getMessage());
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
     public ResponseEntity<String> handleArgumentNotValid(MethodArgumentNotValidException e) {
         log.error("Невалидное значение, переданное в контролер {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dao.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.exception.IncorrectBookerId;
 import ru.practicum.shareit.exception.IncorrectIdException;
 import ru.practicum.shareit.item.dao.CommentRepository;
 import ru.practicum.shareit.item.dao.ItemRepository;
@@ -28,6 +29,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static ru.practicum.shareit.booking.model.Status.APPROVED;
 import static ru.practicum.shareit.booking.model.Status.REJECTED;
 import static ru.practicum.shareit.util.BookingTest.getNewBooking;
@@ -159,6 +161,18 @@ class ItemServiceImplTest {
         when(itemRepo.findById(1L)).thenReturn(Optional.ofNullable(item));
 
         assertThrows(IncorrectIdException.class, () -> service.saveComment(commentDtoRequest, 1L, 1L));
+    }
+
+    @Test
+    void saveComment_whenBookingIsNotExist_thenThrowIncorrectBookingId() {
+        when(itemRepo.findById(1L)).thenReturn(Optional.ofNullable(item));
+        when(bookingRepo
+                .findByItemIdAndUserIdAndStatusApprovedAndStartBeforeNow(1L, 2L, SORT_BY_START_ASC))
+                .thenReturn(Collections.emptyList());
+
+        assertThrows(IncorrectBookerId.class, () -> service.saveComment(commentDtoRequest, 1L, 2L));
+
+        verify(commentRepo, never()).saveAndFlush(any());
     }
 
     @Test
