@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.request.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,22 +11,19 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class ItemDtoResponse {
+public class ItemRequestDtoResponse {
     Long id;
-    String name;
     String description;
-    Boolean available;
-    List<CommentDtoResponse> comments;
-    BookingDto lastBooking;
-    BookingDto nextBooking;
-    Long requestId;
+    LocalDateTime created;
+    List<ItemDto> items;
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    public static class BookingDto {
+    public static class ItemDto {
         Long id;
-        LocalDateTime start;
-        LocalDateTime end;
-        Long bookerId;
+        String name;
+        String description;
+        Boolean available;
+        Long requestId;
     }
 }

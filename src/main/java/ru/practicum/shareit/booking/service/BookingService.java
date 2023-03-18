@@ -12,7 +12,7 @@ public interface BookingService {
 
     BookingDtoResponse findById(long id, long userId);
 
-    List<BookingDtoResponse> findAllByUserId(long userId, String status);
+    List<BookingDtoResponse> findAllByUserId(long userId, String status, int from, Integer size);
 
-    List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status);
+    List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status, int from, Integer size);
 }
