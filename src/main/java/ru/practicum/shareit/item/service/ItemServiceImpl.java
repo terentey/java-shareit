@@ -129,8 +129,8 @@ public class ItemServiceImpl implements ItemService {
                     .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text, text));
         } else {
             int pageNum = from / size;
-            return setCommentsAndBookings(repository.
-                    findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
+            return setCommentsAndBookings(repository
+                    .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
                             text, PageRequest.of(pageNum, size)));
         }
     }
