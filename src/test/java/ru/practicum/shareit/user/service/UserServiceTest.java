@@ -16,6 +16,7 @@ class UserServiceTest {
     private UserService service;
 
     @Test
+    @Sql("classpath:reboot.sql")
     @Sql("classpath:test.sql")
     void update() {
         UserDto update = UserDto

@@ -18,6 +18,7 @@ class BookingServiceTest {
     private BookingService service;
 
     @Test
+    @Sql("classpath:reboot.sql")
     @Sql("classpath:test.sql")
     void findAllByUser() {
         List<BookingDtoResponse> result = service.findAllByUserId(2, "ALL", 0, null);

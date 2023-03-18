@@ -19,6 +19,7 @@ class ItemServiceTest {
     private ItemService service;
 
     @Test
+    @Sql("classpath:reboot.sql")
     @Sql("classpath:test.sql")
     void search() {
         List<ItemDtoResponse> result = service.search(2, "it", 0, null);

@@ -18,6 +18,7 @@ class ItemRequestServiceTest {
     private ItemRequestService service;
 
     @Test
+    @Sql("classpath:reboot.sql")
     @Sql("classpath:test.sql")
     void findAll() {
         List<ItemRequestDtoResponse> result = service.findAll(0, 1, 1);
