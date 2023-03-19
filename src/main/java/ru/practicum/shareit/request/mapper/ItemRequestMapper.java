@@ -4,6 +4,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDtoRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResponse;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -12,10 +13,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ItemRequestMapper {
-    public static ItemRequest mapToItemRequest(ItemRequestDtoRequest itemRequestDto) {
+    public static ItemRequest mapToItemRequest(ItemRequestDtoRequest itemRequestDto, User user) {
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setDescription(itemRequestDto.getDescription());
-        itemRequest.setUser(itemRequestDto.getUser());
+        itemRequest.setUser(user);
         itemRequest.setCreated(LocalDateTime.now());
         return itemRequest;
     }
@@ -31,11 +32,7 @@ public class ItemRequestMapper {
 
     public static ItemRequestDtoResponse mapToItemRequestDto(ItemRequest itemRequest, List<Item> items) {
         ItemRequestDtoResponse itemRequestDto = mapToItemRequestDto(itemRequest);
-        if (items != null) {
-            itemRequestDto.setItems(items.stream().map(ItemRequestMapper::mapToItemDto).collect(Collectors.toList()));
-        } else {
-            itemRequestDto.setItems(Collections.emptyList());
-        }
+        itemRequestDto.setItems(items.stream().map(ItemRequestMapper::mapToItemDto).collect(Collectors.toList()));
         return itemRequestDto;
     }
 
@@ -43,7 +40,7 @@ public class ItemRequestMapper {
                                                                    Map<ItemRequest, List<Item>> requests) {
         return itemRequests
                 .stream()
-                .map(i -> mapToItemRequestDto(i, requests.get(i)))
+                .map(i -> mapToItemRequestDto(i, requests.getOrDefault(i, Collections.emptyList())))
                 .collect(Collectors.toList());
     }
 

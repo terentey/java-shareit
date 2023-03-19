@@ -12,5 +12,5 @@ public interface ItemRequestService {
 
     List<ItemRequestDtoResponse> findAllByOwner(long userId);
 
-    List<ItemRequestDtoResponse> findAll(int from, Integer size, long userId);
+    List<ItemRequestDtoResponse> findAll(int from, int size, long userId);
 }

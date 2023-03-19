@@ -345,17 +345,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void findAll_whenSizeIsNull_thenReturnItems() {
-        when(itemRepo.findItemsByUserId(1L)).thenReturn(List.of(item));
-        itemDtoResponse.setComments(emptyList());
-
-        List<ItemDtoResponse> result = service.findAll(1L, 0, null);
-
-        assertEquals(List.of(itemDtoResponse), result);
-    }
-
-    @Test
-    void findAll_whenSizeIsNotNull_thenReturnItems() {
+    void findAll() {
         when(itemRepo.findItemsByUserId(1L, PageRequest.of(2, 2))).thenReturn(List.of(item));
         itemDtoResponse.setComments(emptyList());
 
@@ -373,20 +363,9 @@ class ItemServiceImplTest {
         assertEquals(emptyList(), result);
     }
 
-    @Test
-    void search_whenTextIsNotBlankAndSizeIsNull_thenReturnItems() {
-        String text = "name";
-        when(itemRepo.findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text, text))
-                .thenReturn(List.of(item));
-        itemDtoResponse.setComments(emptyList());
-
-        List<ItemDtoResponse> result = service.search(1L, text, 0, null);
-
-        assertEquals(List.of(itemDtoResponse), result);
-    }
 
     @Test
-    void search_whenTextIsNotBlankAndSizeIsNotNull_thenReturnItems() {
+    void search_whenTextIsNotBlank_thenReturnItems() {
         String text = "name";
         when(itemRepo.findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
                 text, PageRequest.of(2, 1)))

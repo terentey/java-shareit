@@ -156,92 +156,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsNullAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByUserId(1L, null, 1, null));
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsNullAndSizeIsNotNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByUserId(1L, null, 1, 1));
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsALLAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserId(2L, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "ALL", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsCURRENTAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserIdAndCurrentTime(2L, SORT_BY_START_DESC))
-                .thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "CURRENT", 2, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsPASTAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserIdAndEndBefore(2L, SORT_BY_START_DESC))
-                .thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "PAST", 2, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsFUTUREAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserIdAndStartAfter(2L, SORT_BY_START_DESC))
-                .thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "FUTURE", 2, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsWAITINGAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserIdAndStatus(2L, WAITING, SORT_BY_START_DESC))
-                .thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "WAITING", 2, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsREJECTEDAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByUserIdAndStatus(2L, REJECTED, SORT_BY_START_DESC))
-                .thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByUserId(2L, "REJECTED", 2, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsAllAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByUserId(2L, "All", 0, null));
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsBlankAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByUserId(2L, "    ", 0, null));
-    }
-
-    @Test
-    void findAllByUserId_whenStatusIsALLAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsALL_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserId(2L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -252,7 +167,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsCURRENTAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsCURRENT_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserIdAndCurrentTime(2L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -263,7 +178,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsPASTAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsPAST_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserIdAndEndBefore(2L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -274,7 +189,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsFUTUREAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsFUTURE_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserIdAndStartAfter(2L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -285,7 +200,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsWAITINGAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsWAITING_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserIdAndStatus(2L, WAITING, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -296,7 +211,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsREJECTEDAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByUserId_whenStatusIsREJECTED_thenReturnBookings() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(booker));
         when(bookingRepo.findAllByUserIdAndStatus(2L, REJECTED, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -307,97 +222,22 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_whenStatusIsAllAndSizeIsNotNull_thenThrowIncorrectState() {
+    void findAllByUserId_whenStatusIsAll_thenThrowIncorrectState() {
         assertThrows(IncorrectState.class, () -> service.findAllByUserId(2L, "All", 2, 1));
     }
 
     @Test
-    void findAllByUserId_whenStatusIsBlankAndSizeIsNotNull_thenThrowIncorrectState() {
+    void findAllByUserId_whenStatusIsBlank_thenThrowIncorrectState() {
         assertThrows(IncorrectState.class, () -> service.findAllByUserId(2L, "    ", 2, 1));
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsNullAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(2L, null, 1, null));
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsNullAndSizeIsNotNull_thenThrowIncorrectState() {
+    void findAllByOwnerId_whenStatusIsNull_thenThrowIncorrectState() {
         assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(2L, null, 1, 1));
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsALLAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerId(1L, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "ALL", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsCURRENTAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerIdAndCurrentTime(1L, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "CURRENT", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsPASTAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerIdAndEndBefore(1L, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "PAST", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsFUTUREAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerIdAndStartAfter(1L, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "FUTURE", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsWAITINGAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerIdAndStatus(1L, WAITING, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "WAITING", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsREJECTEDAndSizeIsNull_thenReturnBookings() {
-        when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(booker));
-        when(bookingRepo.findAllByOwnerIdAndStatus(1L, REJECTED, SORT_BY_START_DESC)).thenReturn(List.of(booking));
-
-        List<BookingDtoResponse> result = service.findAllByOwnerId(1L, "REJECTED", 0, null);
-
-        assertEquals(List.of(bookingDtoResponse), result);
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsAllAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(1L, "All", 0, null));
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsBlankAndSizeIsNull_thenThrowIncorrectState() {
-        assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(1L, "    ", 0, null));
-    }
-
-    @Test
-    void findAllByOwnerId_whenStatusIsALLAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsALL_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerId(1L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -408,7 +248,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsCURRENTAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsCURRENT_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerIdAndCurrentTime(1L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -419,7 +259,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsPASTAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsPAST_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerIdAndEndBefore(1L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -430,7 +270,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsFUTUREAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsFUTURE_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerIdAndStartAfter(1L, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -441,7 +281,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsWAITINGAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsWAITING_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerIdAndStatus(1L, WAITING, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -452,7 +292,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsREJECTEDAndSizeIsNotNull_thenReturnBookings() {
+    void findAllByOwnerId_whenStatusIsREJECTED_thenReturnBookings() {
         when(userRepo.findById(1L)).thenReturn(Optional.ofNullable(owner));
         when(bookingRepo.findAllByOwnerIdAndStatus(1L, REJECTED, PageRequest.of(2, 1, SORT_BY_START_DESC)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
@@ -463,12 +303,12 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsAllAndSizeIsNotNull_thenThrowIncorrectState() {
+    void findAllByOwnerId_whenStatusIsAll_thenThrowIncorrectState() {
         assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(1L, "All", 2, 1));
     }
 
     @Test
-    void findAllByOwnerId_whenStatusIsBlankAndSizeIsNotNull_thenThrowIncorrectState() {
+    void findAllByOwnerId_whenStatusIsBlank_thenThrowIncorrectState() {
         assertThrows(IncorrectState.class, () -> service.findAllByOwnerId(1L, "    ", 2, 1));
     }
 

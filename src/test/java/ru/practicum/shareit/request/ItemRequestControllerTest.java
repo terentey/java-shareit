@@ -133,26 +133,6 @@ class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void findAll_whenSizeIsNull_thenReturnListOfItemRequest() {
-        requestDtoResponse.setId(1L);
-        when(service.findAll(0, null, 1L)).thenReturn(List.of(requestDtoResponse));
-
-        String result = mockMvc.perform(get("/requests/all")
-                        .param("from", "0")
-                        .param("size", "")
-                        .header("X-Sharer-User-Id", 1L)
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(service, times(1)).findAll(0, null, 1L);
-        assertEquals(objectMapper.writeValueAsString(List.of(requestDtoResponse)), result);
-    }
-
-    @SneakyThrows
-    @Test
     void findAll_whenFromIsNull_thenReturnListOfItemRequest() {
         requestDtoResponse.setId(1L);
         when(service.findAll(0, 1, 1L)).thenReturn(List.of(requestDtoResponse));

@@ -73,130 +73,76 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDtoResponse> findAllByUserId(long userId, String status, int from, Integer size) {
+    public List<BookingDtoResponse> findAllByUserId(long userId, String status, int from, int size) {
         final State state = getState(status);
         userRepo.findById(userId).orElseThrow(IncorrectIdException::new);
-        if (size == null) {
-            List<Booking> bookings;
-            switch (state) {
-                case ALL:
-                    bookings = repository.findAllByUserId(userId, SORT_BY_START_DESC);
-                    break;
-                case CURRENT:
-                    bookings = repository.findAllByUserIdAndCurrentTime(userId, SORT_BY_START_DESC);
-                    break;
-                case PAST:
-                    bookings = repository.findAllByUserIdAndEndBefore(userId, SORT_BY_START_DESC);
-                    break;
-                case FUTURE:
-                    bookings = repository.findAllByUserIdAndStartAfter(userId, SORT_BY_START_DESC);
-                    break;
-                case WAITING:
-                    bookings = repository.findAllByUserIdAndStatus(userId, Status.WAITING, SORT_BY_START_DESC);
-                    break;
-                case REJECTED:
-                    bookings = repository.findAllByUserIdAndStatus(userId, Status.REJECTED, SORT_BY_START_DESC);
-                    break;
-                default:
-                    throw new IncorrectState();
-            }
-            return BookingMapper.mapToBookingDto(bookings);
-        } else {
-            int pageNum = from / size;
-            Page<Booking> bookings;
-            switch (state) {
-                case ALL:
-                    bookings = repository.findAllByUserId(userId, PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case CURRENT:
-                    bookings = repository.findAllByUserIdAndCurrentTime(userId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case PAST:
-                    bookings = repository.findAllByUserIdAndEndBefore(userId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case FUTURE:
-                    bookings = repository.findAllByUserIdAndStartAfter(userId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case WAITING:
-                    bookings = repository.findAllByUserIdAndStatus(userId, Status.WAITING,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case REJECTED:
-                    bookings = repository.findAllByUserIdAndStatus(userId, Status.REJECTED,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                default:
-                    throw new IncorrectState();
-            }
-            return BookingMapper.mapToBookingDto(bookings.getContent());
+        int pageNum = from / size;
+        Page<Booking> bookings;
+        switch (state) {
+            case ALL:
+                bookings = repository.findAllByUserId(userId, PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case CURRENT:
+                bookings = repository.findAllByUserIdAndCurrentTime(userId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case PAST:
+                bookings = repository.findAllByUserIdAndEndBefore(userId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case FUTURE:
+                bookings = repository.findAllByUserIdAndStartAfter(userId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case WAITING:
+                bookings = repository.findAllByUserIdAndStatus(userId, Status.WAITING,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case REJECTED:
+                bookings = repository.findAllByUserIdAndStatus(userId, Status.REJECTED,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            default:
+                throw new IncorrectState();
         }
+        return BookingMapper.mapToBookingDto(bookings.getContent());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status, int from, Integer size) {
+    public List<BookingDtoResponse> findAllByOwnerId(long ownerId, String status, int from, int size) {
         final State state = getState(status);
         userRepo.findById(ownerId).orElseThrow(IncorrectIdException::new);
-        if (size == null) {
-            List<Booking> bookings;
-            switch (state) {
-                case ALL:
-                    bookings = repository.findAllByOwnerId(ownerId, SORT_BY_START_DESC);
-                    break;
-                case CURRENT:
-                    bookings = repository.findAllByOwnerIdAndCurrentTime(ownerId, SORT_BY_START_DESC);
-                    break;
-                case PAST:
-                    bookings = repository.findAllByOwnerIdAndEndBefore(ownerId, SORT_BY_START_DESC);
-                    break;
-                case FUTURE:
-                    bookings = repository.findAllByOwnerIdAndStartAfter(ownerId, SORT_BY_START_DESC);
-                    break;
-                case WAITING:
-                    bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING, SORT_BY_START_DESC);
-                    break;
-                case REJECTED:
-                    bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED, SORT_BY_START_DESC);
-                    break;
-                default:
-                    throw new IncorrectState();
-            }
-            return BookingMapper.mapToBookingDto(bookings);
-        } else {
-            int pageNum = from / size;
-            Page<Booking> bookings;
-            switch (state) {
-                case ALL:
-                    bookings = repository.findAllByOwnerId(ownerId, PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case CURRENT:
-                    bookings = repository.findAllByOwnerIdAndCurrentTime(ownerId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case PAST:
-                    bookings = repository.findAllByOwnerIdAndEndBefore(ownerId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case FUTURE:
-                    bookings = repository.findAllByOwnerIdAndStartAfter(ownerId,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case WAITING:
-                    bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                case REJECTED:
-                    bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED,
-                            PageRequest.of(pageNum, size, SORT_BY_START_DESC));
-                    break;
-                default:
-                    throw new IncorrectState();
-            }
-            return BookingMapper.mapToBookingDto(bookings.getContent());
+        int pageNum = from / size;
+        Page<Booking> bookings;
+        switch (state) {
+            case ALL:
+                bookings = repository.findAllByOwnerId(ownerId, PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case CURRENT:
+                bookings = repository.findAllByOwnerIdAndCurrentTime(ownerId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case PAST:
+                bookings = repository.findAllByOwnerIdAndEndBefore(ownerId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case FUTURE:
+                bookings = repository.findAllByOwnerIdAndStartAfter(ownerId,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case WAITING:
+                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.WAITING,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            case REJECTED:
+                bookings = repository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED,
+                        PageRequest.of(pageNum, size, SORT_BY_START_DESC));
+                break;
+            default:
+                throw new IncorrectState();
         }
+        return BookingMapper.mapToBookingDto(bookings.getContent());
     }
 
     private State getState(String state) {

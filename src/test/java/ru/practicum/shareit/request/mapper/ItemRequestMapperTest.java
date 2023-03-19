@@ -62,12 +62,7 @@ class ItemRequestMapperTest {
     void mapToItemRequestDto_whenItemsIsNull_thenReturnCorrectRequestWithEmptyItems() {
         List<Item> items = null;
 
-        ItemRequestDtoResponse result = ItemRequestMapper.mapToItemRequestDto(request, items);
-
-        assertEquals(request.getId(), result.getId());
-        assertEquals(request.getDescription(), result.getDescription());
-        assertEquals(request.getCreated(), result.getCreated());
-        assertTrue(result.getItems().isEmpty());
+        assertThrows(NullPointerException.class, () -> ItemRequestMapper.mapToItemRequestDto(request, items));
     }
 
     @Test

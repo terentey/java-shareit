@@ -98,21 +98,6 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void findAll_whenSizeIsNull_thenReturnRequests() {
-        when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(user));
-        List<ItemRequest> requests = List.of(request);
-        when(requestRepo.findAllByUserIdNotIn(2L)).thenReturn(requests);
-        when(itemRepo.findAllByItemRequestIn(requests)).thenReturn(List.of(item));
-
-        List<ItemRequestDtoResponse> result = service.findAll(0, null, 2L);
-
-        assertEquals(request.getId(), result.get(0).getId());
-        assertEquals(request.getDescription(), result.get(0).getDescription());
-        assertEquals(request.getCreated(), result.get(0).getCreated());
-        assertEquals(item.getId(), result.get(0).getItems().get(0).getId());
-    }
-
-    @Test
     void findAll_whenSizeIsNotNull_thenReturnRequests() {
         when(userRepo.findById(2L)).thenReturn(Optional.ofNullable(user));
         List<ItemRequest> requests = List.of(request);

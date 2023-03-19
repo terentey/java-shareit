@@ -31,9 +31,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     @Override
     public ItemRequestDtoResponse save(ItemRequestDtoRequest itemRequestDto, long userId) {
-        itemRequestDto.setUser(checkUser(userId));
+        User user = checkUser(userId);
         return ItemRequestMapper
-                .mapToItemRequestDto(repository.saveAndFlush(ItemRequestMapper.mapToItemRequest(itemRequestDto)));
+                .mapToItemRequestDto(repository.saveAndFlush(ItemRequestMapper.mapToItemRequest(itemRequestDto, user)));
     }
 
     @Transactional(readOnly = true)
@@ -54,16 +54,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemRequestDtoResponse> findAll(int from, Integer size, long userId) {
+    public List<ItemRequestDtoResponse> findAll(int from, int size, long userId) {
         checkUser(userId);
-        if (size == null) {
-            List<ItemRequest> itemRequests = repository.findAllByUserIdNotIn(userId);
-            return ItemRequestMapper.mapToItemRequestDto(itemRequests, findItems(itemRequests));
-        } else {
-            int pageNum = from / size;
-            List<ItemRequest> itemRequests = repository.findAllByUserIdNotIn(userId, PageRequest.of(pageNum, size));
-            return ItemRequestMapper.mapToItemRequestDto(itemRequests, findItems(itemRequests));
-        }
+        int pageNum = from / size;
+        List<ItemRequest> itemRequests = repository.findAllByUserIdNotIn(userId, PageRequest.of(pageNum, size));
+        return ItemRequestMapper.mapToItemRequestDto(itemRequests, findItems(itemRequests));
     }
 
     private Map<ItemRequest, List<Item>> findItems(List<ItemRequest> itemRequests) {

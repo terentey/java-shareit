@@ -110,23 +110,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDtoResponse> findAll(long userId, int from, Integer size) {
-        if (size == null) {
-            return setCommentsAndBookings(repository.findItemsByUserId(userId));
-        } else {
-            int pageNum = from / size;
-            return setCommentsAndBookings(repository.findItemsByUserId(userId, PageRequest.of(pageNum, from)));
-        }
+    public List<ItemDtoResponse> findAll(long userId, int from, int size) {
+        int pageNum = from / size;
+        return setCommentsAndBookings(repository.findItemsByUserId(userId, PageRequest.of(pageNum, size)));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDtoResponse> search(long userId, String text, int from, Integer size) {
+    public List<ItemDtoResponse> search(long userId, String text, int from, int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
-        } else if (size == null) {
-            return setCommentsAndBookings(repository
-                    .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text, text));
         } else {
             int pageNum = from / size;
             return setCommentsAndBookings(repository

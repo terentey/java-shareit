@@ -50,7 +50,7 @@ public class ItemController {
     @GetMapping()
     public List<ItemDtoResponse> findAll(@RequestHeader(name = "X-Sharer-User-Id") long userId,
                                          @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                         @RequestParam(required = false) @Positive Integer size) {
+                                         @RequestParam(defaultValue = "20") @Positive int size) {
         return service.findAll(userId, from, size);
     }
 
@@ -58,7 +58,7 @@ public class ItemController {
     public List<ItemDtoResponse> search(@RequestHeader(name = "X-Sharer-User-Id") long userId,
                                         @RequestParam String text,
                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                        @RequestParam(required = false) @Positive Integer size) {
+                                        @RequestParam(defaultValue = "20") @Positive int size) {
         return service.search(userId, text, from, size);
     }
 }

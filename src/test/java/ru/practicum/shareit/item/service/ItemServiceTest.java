@@ -22,7 +22,7 @@ class ItemServiceTest {
     @Sql("classpath:reboot.sql")
     @Sql("classpath:test.sql")
     void search() {
-        List<ItemDtoResponse> result = service.search(2, "it", 0, null);
+        List<ItemDtoResponse> result = service.search(2, "it", 0, 20);
 
         assertEquals(1, result.get(0).getId());
     }
