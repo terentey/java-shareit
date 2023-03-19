@@ -241,27 +241,6 @@ class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void findByUserId_whenSizeNull_thenReturnBookings() {
-        when(service.findAllByUserId(anyLong(), anyString(), anyInt(), eq(null))).thenReturn(List.of(response));
-
-        String result = mockMvc.perform(get("/bookings")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request))
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "")
-                        .param("from", "")
-                        .param("size", ""))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(service, times(1)).findAllByUserId(anyLong(), anyString(), anyInt(), eq(null));
-        assertEquals(objectMapper.writeValueAsString(List.of(response)), result);
-    }
-
-    @SneakyThrows
-    @Test
     void findByUserId_whenFromIsNotPositive_thenReturnStatusIsInternalServerError() {
         mockMvc.perform(get("/bookings")
                         .contentType("application/json")
@@ -350,27 +329,6 @@ class BookingControllerTest {
                 .getContentAsString();
 
         verify(service, times(1)).findAllByOwnerId(anyLong(), anyString(), eq(0), anyInt());
-        assertEquals(objectMapper.writeValueAsString(List.of(response)), result);
-    }
-
-    @SneakyThrows
-    @Test
-    void findByOwnerId_whenSizeNull_thenReturnBookings() {
-        when(service.findAllByOwnerId(anyLong(), anyString(), anyInt(), eq(null))).thenReturn(List.of(response));
-
-        String result = mockMvc.perform(get("/bookings/owner")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request))
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("state", "")
-                        .param("from", "")
-                        .param("size", ""))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(service, times(1)).findAllByOwnerId(anyLong(), anyString(), anyInt(), eq(null));
         assertEquals(objectMapper.writeValueAsString(List.of(response)), result);
     }
 

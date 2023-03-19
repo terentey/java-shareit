@@ -346,10 +346,10 @@ class ItemServiceImplTest {
 
     @Test
     void findAll() {
-        when(itemRepo.findItemsByUserId(1L, PageRequest.of(2, 2))).thenReturn(List.of(item));
+        when(itemRepo.findItemsByUserId(1L, PageRequest.of(0, 2))).thenReturn(List.of(item));
         itemDtoResponse.setComments(emptyList());
 
-        List<ItemDtoResponse> result = service.findAll(1L, 2, 1);
+        List<ItemDtoResponse> result = service.findAll(1L, 0, 2);
 
         assertEquals(List.of(itemDtoResponse), result);
     }

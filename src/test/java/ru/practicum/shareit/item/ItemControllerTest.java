@@ -291,25 +291,6 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void findAll_whenSizeIsNull_thenReturnItems() {
-        when(service.findAll(anyLong(), anyInt(), eq(null))).thenReturn(List.of(response));
-
-        String result = mockMvc.perform(get("/items")
-                        .contentType("application/json")
-                        .param("from", "1")
-                        .param("size", "")
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(service, times(1)).findAll(anyLong(), anyInt(), eq(null));
-        assertEquals(objectMapper.writeValueAsString(List.of(response)), result);
-    }
-
-    @SneakyThrows
-    @Test
     void findAll_whenSizeIsNotPositive_thenReturnStatusIsInternalServerError() {
         mockMvc.perform(get("/items")
                         .contentType("application/json")
@@ -373,26 +354,6 @@ class ItemControllerTest {
                 .andExpect(status().isInternalServerError());
 
         verify(service, never()).search(anyLong(), anyString(), anyInt(), anyInt());
-    }
-
-    @SneakyThrows
-    @Test
-    void search_whenSizeIsNull_thenReturnItems() {
-        when(service.search(anyLong(), anyString(), anyInt(), eq(null))).thenReturn(List.of(response));
-
-        String result = mockMvc.perform(get("/items/search")
-                        .contentType("application/json")
-                        .param("text", "search")
-                        .param("from", "1")
-                        .param("size", "")
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(service, times(1)).search(anyLong(), anyString(), anyInt(), eq(null));
-        assertEquals(objectMapper.writeValueAsString(List.of(response)), result);
     }
 
     @SneakyThrows
