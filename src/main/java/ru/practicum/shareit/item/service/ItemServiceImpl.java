@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -41,21 +43,30 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepo;
     private final ItemRepository repository;
     private final BookingRepository bookingRepo;
+    private final ItemRequestRepository itemRequestRepo;
 
     @Transactional
     @Override
     public ItemDtoResponse save(ItemDtoRequest itemDto, long userId) {
+        Item item = repository.saveAndFlush(ItemMapper
+                .mapToItem(itemDto, userRepo.findById(userId)
+                        .orElseThrow(IncorrectIdException::new)));
+        if (itemDto.getRequestId() != null) {
+            item.setItemRequest(itemRequestRepo
+                    .findById(itemDto.getRequestId())
+                    .orElseThrow(IncorrectIdException::new));
+        }
         return ItemMapper
-                .mapToItemDto(repository
-                        .saveAndFlush(ItemMapper
-                                .mapToItem(itemDto, userRepo.findById(userId).orElseThrow(IncorrectIdException::new))));
+                .mapToItemDto(item);
     }
 
     @Transactional
     @Override
     public CommentDtoResponse saveComment(CommentDtoRequest commentDto, long itemId, long userId) {
         Item item = repository.findById(itemId).orElseThrow(IncorrectIdException::new);
-        if (userId == item.getUser().getId()) throw new IncorrectIdException();
+        if (userId == item.getUser().getId()) {
+            throw new IncorrectIdException();
+        }
         Booking booking = bookingRepo
                 .findByItemIdAndUserIdAndStatusApprovedAndStartBeforeNow(itemId, userId, SORT_BY_START_ASC)
                 .stream().findFirst().orElseThrow(IncorrectBookerId::new);
@@ -67,7 +78,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDtoResponse update(ItemDtoRequest itemDto, long id, long userId) {
         Item item = repository.findById(id).orElseThrow(IncorrectIdException::new);
-        if (userId != item.getUser().getId()) throw new IncorrectIdException();
+        if (userId != item.getUser().getId()) {
+            throw new IncorrectIdException();
+        }
         if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             item.setName(itemDto.getName());
         }
@@ -97,18 +110,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDtoResponse> findAll(long userId) {
-        return setCommentsAndBookings(repository.findItemsByUserId(userId));
+    public List<ItemDtoResponse> findAll(long userId, int from, int size) {
+        int pageNum = from / size;
+        return setCommentsAndBookings(repository.findItemsByUserId(userId, PageRequest.of(pageNum, size)));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDtoResponse> search(long userId, String text) {
+    public List<ItemDtoResponse> search(long userId, String text, int from, int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
+        } else {
+            int pageNum = from / size;
+            return setCommentsAndBookings(repository
+                    .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
+                            text, PageRequest.of(pageNum, size)));
         }
-        return setCommentsAndBookings(repository
-                .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text, text));
     }
 
     private List<ItemDtoResponse> setCommentsAndBookings(List<Item> items) {

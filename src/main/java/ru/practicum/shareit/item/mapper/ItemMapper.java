@@ -19,13 +19,17 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
     public static ItemDtoResponse mapToItemDto(Item item) {
-        return ItemDtoResponse
+        ItemDtoResponse itemDto = ItemDtoResponse
                 .builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
+        if (item.getItemRequest() != null) {
+            itemDto.setRequestId(item.getItemRequest().getId());
+        }
+        return itemDto;
     }
 
     public static ItemDtoResponse mapToItemDto(Item item, List<Comment> comments) {

@@ -19,6 +19,7 @@ public class ItemDtoResponse {
     List<CommentDtoResponse> comments;
     BookingDto lastBooking;
     BookingDto nextBooking;
+    Long requestId;
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

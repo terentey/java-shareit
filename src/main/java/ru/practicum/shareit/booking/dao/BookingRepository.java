@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.dao;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,27 +42,52 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking b " +
             "where b.user.id=?1 and now() between b.start and b.end")
-    List<Booking> findAllByUserIdAndStatusAndCurrentTime(long userId, Sort sort);
+    List<Booking> findAllByUserIdAndCurrentTime(long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "where b.user.id=?1 and b.start > now()")
-    List<Booking> findAllByUserIdAndStatusAndStartAfter(long userId, Sort sort);
+    List<Booking> findAllByUserIdAndStartAfter(long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "where b.user.id=?1 and b.end < now()")
-    List<Booking> findAllByUserIdAndStatusAndEndBefore(long userId, Sort sort);
+    List<Booking> findAllByUserIdAndEndBefore(long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.user.id=?1")
-    List<Booking> findAllByOwnerId(long ownerId, Sort sort);
+            "where b.user.id=?1")
+    Page<Booking> findAllByUserId(long userId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id=?1 and b.status=?2")
+    Page<Booking> findAllByUserIdAndStatus(long userId, Status status, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id=?1 and now() between b.start and b.end")
+    Page<Booking> findAllByUserIdAndCurrentTime(long userId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id=?1 and b.start > now()")
+    Page<Booking> findAllByUserIdAndStartAfter(long userId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.user.id=?1 and b.end < now()")
+    Page<Booking> findAllByUserIdAndEndBefore(long userId, Pageable pageable);
 
     @Query("select b " +
             "from Booking b " +
             "where b.item.user.id=?1 and b.status not in ?2")
     List<Booking> findAllByOwnerIdAndStatusNotIn(long ownerId, Status status, Sort sort);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1")
+    List<Booking> findAllByOwnerId(long ownerId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
@@ -70,15 +97,40 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking b " +
             "where b.item.user.id=?1 and now() between b.start and b.end")
-    List<Booking> findAllByOwnerIdAndStatusAndCurrentTime(long ownerId, Sort sort);
+    List<Booking> findAllByOwnerIdAndCurrentTime(long ownerId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "where b.item.user.id=?1 and b.start > now()")
-    List<Booking> findAllByOwnerIdAndStatusAndStartAfter(long ownerId, Sort sort);
+    List<Booking> findAllByOwnerIdAndStartAfter(long ownerId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "where b.item.user.id=?1 and b.end < now()")
-    List<Booking> findAllByOwnerIdAndStatusAndEndBefore(long ownerId, Sort sort);
+    List<Booking> findAllByOwnerIdAndEndBefore(long ownerId, Sort sort);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1")
+    Page<Booking> findAllByOwnerId(long ownerId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1 and b.status=?2")
+    Page<Booking> findAllByOwnerIdAndStatus(long ownerId, Status status, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1 and now() between b.start and b.end")
+    Page<Booking> findAllByOwnerIdAndCurrentTime(long ownerId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1 and b.start > now()")
+    Page<Booking> findAllByOwnerIdAndStartAfter(long ownerId, Pageable pageable);
+
+    @Query("select b " +
+            "from Booking b " +
+            "where b.item.user.id=?1 and b.end < now()")
+    Page<Booking> findAllByOwnerIdAndEndBefore(long ownerId, Pageable pageable);
 }
