@@ -2,13 +2,14 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-@RestController
+@Controller
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 @Validated

@@ -24,7 +24,6 @@ import ru.practicum.shareit.request.dao.ItemRequestRepository;
 import ru.practicum.shareit.user.dao.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -118,14 +117,10 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDtoResponse> search(long userId, String text, int from, int size) {
-        if (text.isBlank()) {
-            return Collections.emptyList();
-        } else {
-            int pageNum = from / size;
-            return setCommentsAndBookings(repository
-                    .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
-                            text, PageRequest.of(pageNum, size)));
-        }
+        int pageNum = from / size;
+        return setCommentsAndBookings(repository
+                .findItemsByAvailableTrueAndDescriptionContainingIgnoreCaseOrNameContainingIgnoreCase(text,
+                        text, PageRequest.of(pageNum, size)));
     }
 
     private List<ItemDtoResponse> setCommentsAndBookings(List<Item> items) {

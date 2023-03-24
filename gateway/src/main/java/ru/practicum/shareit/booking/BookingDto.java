@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.annotation.EndAfterStart;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -23,6 +22,5 @@ public class BookingDto {
     Long itemId;
     @FutureOrPresent
     LocalDateTime start;
-    @Future
     LocalDateTime end;
 }
